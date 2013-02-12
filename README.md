@@ -8,7 +8,7 @@ compiled using f2py and then called from python.
 
 Regardless it can be compiled using 
     
-    f2py2.7 -lblas -c -m dchud dchud.f
+    f2py -lblas -c -m dchud dchud.f
 
 which should create dchud.so. From there just follow the example in
 test.py.
