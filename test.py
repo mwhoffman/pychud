@@ -3,7 +3,7 @@ import numpy as np
 import scipy.linalg
 
 def test_dchud():
-    p = 5
+    p = 100
     A = np.random.rand(p, p)
     A = np.dot(A.T, A)
     x = np.random.rand(p)
@@ -11,9 +11,9 @@ def test_dchud():
     R, _ = scipy.linalg.cho_factor(A, lower=False)
 
     R = np.asfortranarray(R)
-    x = np.asfortranarray(x)
-    c = np.asfortranarray(np.empty(p))
-    s = np.asfortranarray(np.empty(p))
+    x = x
+    c = np.empty(p)
+    s = np.empty(p)
 
     dchud.dchud(R, x, c, s)
     Rother, _ = scipy.linalg.cho_factor(A + np.outer(x,x), lower=False)
