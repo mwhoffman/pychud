@@ -1,26 +1,48 @@
 import dchud
 import numpy as np
+import numpy.testing as nt
 import scipy.linalg
 
+
 def test_dchud():
-    p = 100
-    A = np.random.rand(p, p)
-    A = np.dot(A.T, A)
-    x = np.random.rand(p)
+    n = 100     # number of random matrices to test.
+    p = 100     # size of the matrices.
 
-    R, _ = scipy.linalg.cho_factor(A, lower=False)
+    for i in xrange(n):
+        # get a random symmetric matrix A of size p and a random vector x so
+        # that we can use x to do a rank-1 update of A.
+        A = np.random.rand(p, p)
+        A = np.dot(A.T, A)
+        x = np.random.rand(p)
 
-    R = np.asfortranarray(R)
-    x = x
-    c = np.empty(p)
-    s = np.empty(p)
+        # get an upper-triangular cholesky of A and the cholesky of its rank one
+        # update. note that the scipy version of cho_factor doesn't touch the
+        # opposite triangle, which is why for doing products later we'll have to
+        # zero these out.
+        R1, _ = scipy.linalg.cho_factor(A, lower=False)
+        R2, _ = scipy.linalg.cho_factor(A + np.outer(x,x), lower=False)
 
-    dchud.dchud(R, x, c, s)
-    Rother, _ = scipy.linalg.cho_factor(A + np.outer(x,x), lower=False)
+        # NOTE: R1 has to be Fortran-contiguous in order for the in-place update
+        # to work. However, I think cho_factor will always return such an array
+        # (it does call dpotrf after all).
+        assert R1.flags['F_CONTIGUOUS']
 
-    i, j = np.tril_indices(R.shape[0],-1)
-    R[i,j] = 0
-    Rother[i,j] = 0
+        # FIXME: I should fix this so it still works with C-contiguous arrays.
 
-    assert np.allclose(np.dot(R.T,R), np.dot(Rother.T,Rother))
+        # perform the inplace update on R1. note that c/s are just temporary storage.
+        c = np.empty(p)
+        s = np.empty(p)
+        dchud.dchud(R1, x, c, s)
+
+        # note that for both of these the lower triangle is arbitrarily
+        # initialized.  so if we want the *real* cholesky we should zero these
+        # components out.
+        i, j = np.tril_indices(R1.shape[0], -1)
+        R1[i,j] = 0
+        R2[i,j] = 0
+
+        # rather than checking that the cholesky is close we're going to check
+        # whether the corresponding matrix is close. This is because the two
+        # methods of computing the cholesky can differ on signs.
+        nt.assert_allclose(np.dot(R1.T, R1), np.dot(R2.T,R2))
 
