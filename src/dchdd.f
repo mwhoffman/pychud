@@ -46,13 +46,18 @@ c
 c     linpack. this version dated 08/14/78 .
 c     g.w. stewart, university of maryland, argonne national lab.
 c
+c     modified by m.w. hoffman. 2013/08/05.
+c     got rid of the extra generalization to update extra vectors z.
+c     also modified the function call to make it easier to call from
+c     python with f2py.
+c
 c     dchdd uses the following functions and subprograms.
-c
-c     fortran dabs
-c     blas ddot, dnrm2
-c
-c     NOTE: we have to declare the return types of these two
-c     subroutines. I have no idea why.
+c     fortran: dabs
+c     blas: ddot, dnrm2
+
+c     NOTE (matt): we have to declare the return types of these two
+c     functions so we can use them in expressions. this is a peculiar
+c     fortran thing. I'm not sure why it can't figure it out on its own.
       double precision ddot, dnrm2
 c
       integer i,ii,j
