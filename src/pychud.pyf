@@ -1,0 +1,27 @@
+python module pychud
+    interface
+        subroutine dchud(r, ldr, p, x, c, s)
+            ! note, generally r should have dimensions (ldr,*) and x should have
+            ! length at least p>=ldr. this will then update the cholesky stored
+            ! in the first (p,p) subarray of r with the first p elements of x.
+            ! Here we'll simplify this and just make everything take dimensions
+            ! given by ldr.
+            double precision intent(in,out,copy), dimension(ldr,ldr) :: r
+            double precision intent(in), dimension(ldr), check(len(x)==shape(r,0)) :: x
+            integer, intent(hide), depend(r) :: ldr=shape(r,0)
+            integer, intent(hide), depend(ldr) :: p=ldr
+            double precision intent(cache,hide), depend(p), dimension(p) :: c
+            double precision intent(cache,hide), depend(p), dimension(p) :: s
+        end
+
+        subroutine dchdd(r, ldr, p, x, c, s, info)
+            double precision intent(in,out,copy), dimension(ldr,ldr) :: r
+            double precision intent(in), dimension(ldr), check(len(x)==shape(r,0)) :: x
+            integer, intent(out) :: info
+            integer, intent(hide), depend(r) :: ldr=shape(r,0)
+            integer, intent(hide), depend(ldr) :: p=ldr
+            double precision intent(cache,hide), depend(p), dimension(p) :: c
+            double precision intent(cache,hide), depend(p), dimension(p) :: s
+        end
+    end
+end

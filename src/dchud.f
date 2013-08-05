@@ -1,7 +1,6 @@
       subroutine dchud(r,ldr,p,x,c,s)
-      integer ldr,p
-      double precision c(p)
-      double precision r(ldr,*),x(p),s(p)
+      integer ldr, p
+      double precision r(ldr,p), x(p), s(p), c(p)
 c
 c     Given a cholesky decomposition A=R^T R of some matrix A, compute
 c     the decomposition of A' = A + x^Tx as a function of R and the
