@@ -4,7 +4,7 @@ from numpy.distutils.core import setup
 
 def configuration(parent_package='', top_path=None):
     config = Configuration(None, parent_package, top_path)
-    config.add_extension('dchud', sources=['dchud.f'], libraries=['blas'])
+    config.add_extension('dchud', sources=['dchud.pyf', 'dchud.f'], libraries=['blas'])
     return config
 
 

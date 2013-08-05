@@ -35,8 +35,7 @@ c     also modified the function call to make it easier to call from
 c     python with f2py.
 c
 c     dchud uses the following functions and subroutines.
-c     extended blas drotg
-c     fortran dsqrt
+c     extended blas: drotg
 c
       integer i,j,jm1
       double precision t,xj

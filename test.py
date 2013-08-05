@@ -22,17 +22,8 @@ def test_dchud():
         R1, _ = scipy.linalg.cho_factor(A, lower=False)
         R2, _ = scipy.linalg.cho_factor(A + np.outer(x,x), lower=False)
 
-        # NOTE: R1 has to be Fortran-contiguous in order for the in-place update
-        # to work. However, I think cho_factor will always return such an array
-        # (it does call dpotrf after all).
-        assert R1.flags['F_CONTIGUOUS']
-
-        # FIXME: I should fix this so it still works with C-contiguous arrays.
-
-        # perform the inplace update on R1. note that c/s are just temporary storage.
-        c = np.empty(p)
-        s = np.empty(p)
-        dchud.dchud(R1, x, c, s)
+        # perform the update on R1.
+        R1 = dchud.dchud(R1, x)
 
         # note that for both of these the lower triangle is arbitrarily
         # initialized.  so if we want the *real* cholesky we should zero these
@@ -44,5 +35,5 @@ def test_dchud():
         # rather than checking that the cholesky is close we're going to check
         # whether the corresponding matrix is close. This is because the two
         # methods of computing the cholesky can differ on signs.
-        nt.assert_allclose(np.dot(R1.T, R1), np.dot(R2.T,R2))
+        nt.assert_allclose(np.dot(R1.T, R1), np.dot(R2.T, R2))
 
